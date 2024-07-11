@@ -88,7 +88,7 @@ public class Main {
             System.out.println(sum);
             System.out.println(sum=lastNumSum(sum, 123));
             System.out.println(sum=lastNumSum(sum, 14));
-            System.out.println(sum=lastNumSum(sum, 1));
+            System.out.println(lastNumSum(sum, 1));
 
             System.out.println(lastNumSum(5, 11));
             System.out.println(lastNumSum(lastNumSum(5, 11), 123));
