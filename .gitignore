@@ -5,6 +5,7 @@ target/
 
 ### access-log-parser
 out/
+screenshots/
 ### IntelliJ IDEA ###
 .idea/
 .idea/modules.xml
