@@ -7,11 +7,46 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) throws LineTooLongException {
 
-        int tryCount = 1;//"начиная с единицы" - увеличение произойдет после вывода сообщения
         String path;
-        int linesTotal = 0, longestLine = 0, shortestLine = 1025;
+        int linesTotal = 0, yaBots = 0, googleBots = 0;
         int maxLineLength = 1024;
 
+        path = readFileName();
+
+        try {
+            FileReader fileReader = new FileReader(path);
+            BufferedReader reader =
+                    new BufferedReader(fileReader);
+            String line;
+            while ((line = reader.readLine()) != null) {
+                int length = line.length();
+
+                linesTotal++;
+                if (length > maxLineLength) {
+                    throw new LineTooLongException("Длина строки №" + linesTotal + " превышает максимально допустимую:" + maxLineLength);
+                }
+
+                LogLineParser logLine = new LogLineParser(line);
+                logLine.parse();
+                if(logLine.isYandexBot()) yaBots++;
+                if(logLine.isGoogleBot()) googleBots++;
+
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        Double yaPerc = (double)yaBots/linesTotal*100;
+        Double googlePerc = (double)googleBots/linesTotal*100;
+        System.out.println("Доля запросов YandexBot: " + String.format("%.2f", yaPerc) + "%");
+        System.out.println("Доля запросов Googlebot: " + String.format("%.2f", googlePerc) + "%");
+
+    }
+
+    public static String readFileName(){
+
+        String path;
+        int tryCount = 1;
 
         do {
             System.out.println("Введите путь к log файлу: ");
@@ -35,31 +70,9 @@ public class Main {
 
         } while (true);
 
-        try {
-            FileReader fileReader = new FileReader(path);
-            BufferedReader reader =
-                    new BufferedReader(fileReader);
-            String line;
-            while ((line = reader.readLine()) != null) {
-                int length = line.length();
-
-                if(length > maxLineLength) {
-                    throw new LineTooLongException("Длина строки №" + linesTotal + " превышает максимально допустимую:" + maxLineLength);
-                }
-
-                linesTotal++;
-                if(length > longestLine) longestLine = length;
-                if(shortestLine > length) shortestLine = length;
-
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        System.out.println("Всего строк в файле: " + linesTotal);
-        System.out.println("Самая длинная строка: " + longestLine);
-        System.out.println("Самая короткая строка: " + shortestLine);
+        return path;
 
     }
+
 
 }
