@@ -6,6 +6,9 @@ target/
 ### access-log-parser
 out/
 screenshots/
+access.log
+path.txt
+
 ### IntelliJ IDEA ###
 .idea/
 .idea/modules.xml
