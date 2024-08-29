@@ -1,6 +1,5 @@
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Scanner;
 
@@ -10,6 +9,7 @@ public class Main {
         String path;
         int linesTotal = 0, yaBots = 0, googleBots = 0;
         int maxLineLength = 1024;
+        Statistics stat = new Statistics();
 
         path = readFileName();
 
@@ -26,20 +26,18 @@ public class Main {
                     throw new LineTooLongException("Длина строки №" + linesTotal + " превышает максимально допустимую:" + maxLineLength);
                 }
 
-                LogLineParser logLine = new LogLineParser(line);
-                logLine.parse();
-                if(logLine.isYandexBot()) yaBots++;
-                if(logLine.isGoogleBot()) googleBots++;
+                LogEntry logLine = new LogEntry(line);
+                stat.addEntry(logLine);
+
 
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        Double yaPerc = (double)yaBots/linesTotal*100;
-        Double googlePerc = (double)googleBots/linesTotal*100;
-        System.out.println("Доля запросов YandexBot: " + String.format("%.2f", yaPerc) + "%");
-        System.out.println("Доля запросов Googlebot: " + String.format("%.2f", googlePerc) + "%");
+        //значения делил на 1000, тк тип Инт - "пропадают" копейки в виде сообщений <1КБ или результатов округления
+        //думаю, это не критично.
+        System.out.println("Средний траффик в час (КБ): " + stat.getTrafficRate());
 
     }
 

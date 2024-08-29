@@ -7,6 +7,7 @@ target/
 out/
 screenshots/
 access.log
+access_mini.log
 path.txt
 
 ### IntelliJ IDEA ###
