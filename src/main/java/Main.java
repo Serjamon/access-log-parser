@@ -40,8 +40,12 @@ public class Main {
         System.out.println("Средний траффик в час (КБ): " + stat.getTrafficRate());
         System.out.println("Доли ОС:");
         System.out.println(stat.getOSRate());
-        System.out.println("Запросы выполнены к адресам:");
-        System.out.println(stat.getReferences());
+        System.out.println("Доли Браузеров:");
+        System.out.println(stat.getBrowserRate());
+        System.out.println("Несуществующие адреса в запросах:");
+        System.out.println(stat.getNonExistingReferences());
+//        System.out.println("Запросы выполнены к адресам:");
+//        System.out.println(stat.getExistingReferences());
 
     }
 
