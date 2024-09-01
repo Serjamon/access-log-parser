@@ -38,6 +38,10 @@ public class Main {
         //значения делил на 1000, тк тип Инт - "пропадают" копейки в виде сообщений <1КБ или результатов округления
         //думаю, это не критично.
         System.out.println("Средний траффик в час (КБ): " + stat.getTrafficRate());
+        System.out.println("Доли ОС:");
+        System.out.println(stat.getOSRate());
+        System.out.println("Запросы выполнены к адресам:");
+        System.out.println(stat.getReferences());
 
     }
 

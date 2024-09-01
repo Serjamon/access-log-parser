@@ -97,7 +97,7 @@ public class LogEntry {
         return referer;
     }
 
-    public String getUserAgent() {
-        return userAgent.toString();
+    public UserAgent getUserAgent() {
+        return userAgent;
     }
 }
