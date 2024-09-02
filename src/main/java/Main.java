@@ -50,6 +50,13 @@ public class Main {
         System.out.println(stat.getErrorRate());
         System.out.println("Уникальных пользователей/час за период(среднее):");
         System.out.println(stat.getUniqUserRate());
+        System.out.println("Максимум уникальных посещений в секунду:");
+        System.out.println(stat.getMaxVisitRate());
+        System.out.println("Список сайтов, со страниц которых есть ссылки на текущий сайт:");
+        System.out.println(stat.getDomains());
+        System.out.println("Максимальная посещаемость одним пользователем:");
+        System.out.println(stat.getMaxUserVisitRate());
+
 
     }
 

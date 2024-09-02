@@ -1,14 +1,18 @@
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 public class Statistics {
 
     private int totalTraffic, notBotCount, errorRespCount;
     private LocalDateTime minTime, maxTime;
-    private HashSet<String> existingReferences, nonExistingReferences, ipAddresses;
-    private HashMap<String, Integer> osRate, browserRate;
+    private HashSet<String> existingReferences, nonExistingReferences, domains;
+    private HashMap<String, Integer> osRate, browserRate, ipAddresses;
+    private HashMap<LocalDateTime, Integer> visitRate;
 
     public Statistics() {
         totalTraffic = 1;
@@ -18,9 +22,11 @@ public class Statistics {
         maxTime = LocalDateTime.MIN;
         existingReferences = new HashSet<>();
         nonExistingReferences = new HashSet<>();
-        ipAddresses = new HashSet<>();
+        ipAddresses = new HashMap<>();
         osRate = new HashMap<>();
         browserRate = new HashMap<>();
+        visitRate = new HashMap<>();
+        domains = new HashSet<>();
     }
 
     public void addEntry(LogEntry logEntry) {
@@ -31,6 +37,8 @@ public class Statistics {
         addBrowserCount(logEntry);
         addBotCount(logEntry);
         addErrorCount(logEntry);
+        addVisitRate(logEntry);
+        addDomain(logEntry);
 
     }
 
@@ -57,11 +65,14 @@ public class Statistics {
 
     }
 
-    private void addBotCount(LogEntry logEntry){
+    private void addBotCount(LogEntry logEntry) {
 
         if (!logEntry.getUserAgent().isBot()) {
             notBotCount++;
-            ipAddresses.add(logEntry.getIpAddr());
+
+            ipAddresses.put(logEntry.getIpAddr(),
+                    (ipAddresses.containsKey(logEntry.getIpAddr()) ?
+                            ipAddresses.get(logEntry.getIpAddr()) + 1 : 1));
         }
 
     }
@@ -155,6 +166,64 @@ public class Statistics {
 
     public HashSet<String> getNonExistingReferences() {
         return nonExistingReferences;
+    }
+
+    private void addVisitRate(LogEntry logEntry) {
+
+        if (!logEntry.getUserAgent().isBot()) {
+
+            visitRate.put(logEntry.getDateTime(),
+                    (visitRate.containsKey(logEntry.getDateTime()) ?
+                            visitRate.get(logEntry.getDateTime()) + 1 : 1));
+        }
+    }
+
+    public int getMaxVisitRate() {
+
+        int maxVisits = visitRate.values().stream()
+                .max(Integer::compareTo)
+                .orElse(0);
+
+        return maxVisits;
+    }
+
+    private void addDomain(LogEntry logEntry) {
+
+        //нагуглил +-
+
+        String referer = logEntry.getReferer();
+
+        URI uri = null;
+        try {
+            uri = new URI(referer);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        String domain = uri.getHost();
+        if (domain != null) {
+            domains.add(domain);
+        }
+
+    }
+
+    public HashSet<String> getDomains() {
+        return domains;
+    }
+
+    public String getMaxUserVisitRate() {
+
+        String maxKey = "";
+        int maxValue = Integer.MIN_VALUE;
+
+        for (Map.Entry<String, Integer> entry: ipAddresses.entrySet()) {
+            if (entry.getValue() > maxValue) {
+                maxValue = entry.getValue();
+                maxKey = entry.getKey();
+            }
+        }
+
+        return "IP-Адрес: " + maxKey
+                + " посетил " + maxValue + " раз.";
     }
 
 }
