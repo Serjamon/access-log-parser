@@ -44,8 +44,12 @@ public class Main {
         System.out.println(stat.getBrowserRate());
         System.out.println("Несуществующие адреса в запросах:");
         System.out.println(stat.getNonExistingReferences());
-//        System.out.println("Запросы выполнены к адресам:");
-//        System.out.println(stat.getExistingReferences());
+        System.out.println("Посещений/час за период(не боты):");
+        System.out.println(stat.getVisitsRate());
+        System.out.println("Ошибок/час за период(коды 4хх, 5хх):");
+        System.out.println(stat.getErrorRate());
+        System.out.println("Уникальных пользователей/час за период(среднее):");
+        System.out.println(stat.getUniqUserRate());
 
     }
 

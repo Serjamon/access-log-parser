@@ -1,8 +1,13 @@
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.stream.Stream;
+
 public class UserAgent {
 
     private String inputString, os, browser;
     private final String yaBot = "YandexBot";
     private final String googleBot = "Googlebot";
+    private boolean bot;
 
     public UserAgent(String inputString) {
         this.inputString = inputString;
@@ -34,6 +39,8 @@ public class UserAgent {
         } else if (inputString.contains("Edge")) {
             browser = "Edge";
         } else browser = "other";
+
+        bot = isBot();
 
     }
 
@@ -67,19 +74,22 @@ public class UserAgent {
         return getBotFragment().equals(googleBot);
     }
 
+    public boolean isBot() {
+
+        return getBotFragment().contains("bot");
+    }
+
     private String getBotFragment() {
 
         String fragment;
-        int charIndex;
 
-        String[] parts = inputString.split(";");
-        if (parts.length >= 2) {
-            fragment = parts[1];
-            fragment = fragment.replace(" ", "");
-            charIndex = fragment.indexOf("/");
-            if (charIndex <= 0) return "";
-            fragment = fragment.substring(0, charIndex);
-        } else return "";
+        Optional<String> parts = Arrays.stream(inputString.split(";"))
+                .filter(s -> s.contains("bot"))
+                .findFirst();
+
+        //TODO делал по описанию методов, м.б. можно сделать лучше
+        if (parts.isPresent()) fragment = parts.get();
+        else fragment = "";
 
         return fragment;
     }

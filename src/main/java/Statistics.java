@@ -5,17 +5,20 @@ import java.util.HashSet;
 
 public class Statistics {
 
-    private int totalTraffic;
+    private int totalTraffic, notBotCount, errorRespCount;
     private LocalDateTime minTime, maxTime;
-    private HashSet<String> existingReferences, nonExistingReferences;
+    private HashSet<String> existingReferences, nonExistingReferences, ipAddresses;
     private HashMap<String, Integer> osRate, browserRate;
 
     public Statistics() {
         totalTraffic = 1;
+        notBotCount = 0;
+        errorRespCount = 0;
         minTime = LocalDateTime.MAX;
         maxTime = LocalDateTime.MIN;
         existingReferences = new HashSet<>();
         nonExistingReferences = new HashSet<>();
+        ipAddresses = new HashSet<>();
         osRate = new HashMap<>();
         browserRate = new HashMap<>();
     }
@@ -26,12 +29,18 @@ public class Statistics {
         addReferences(logEntry);
         addOSCount(logEntry);
         addBrowserCount(logEntry);
+        addBotCount(logEntry);
+        addErrorCount(logEntry);
 
     }
 
     private void addReferences(LogEntry logEntry){
         if(logEntry.getResponseCode() == 200) this.existingReferences.add(logEntry.getPath());
         if(logEntry.getResponseCode() == 404) this.nonExistingReferences.add(logEntry.getPath());
+    }
+
+    private void addErrorCount(LogEntry logEntry){
+        if(logEntry.getResponseCode() > 400) this.errorRespCount++;
     }
 
     private void addOSCount(LogEntry logEntry){
@@ -48,6 +57,15 @@ public class Statistics {
 
     }
 
+    private void addBotCount(LogEntry logEntry){
+
+        if (!logEntry.getUserAgent().isBot()) {
+            notBotCount++;
+            ipAddresses.add(logEntry.getIpAddr());
+        }
+
+    }
+
     private void addTrafficAndTime(LogEntry logEntry){
 
         this.totalTraffic += (logEntry.getResponseSize() / 1000);
@@ -59,14 +77,24 @@ public class Statistics {
     }
 
     public double getTrafficRate(){
-        double res = 0;
+        return this.totalTraffic / getLogDurationHours();
+    }
+
+    public double getVisitsRate(){
+        return this.notBotCount / getLogDurationHours();
+    }
+
+    public double getErrorRate(){
+        return this.errorRespCount / getLogDurationHours();
+    }
+
+    public double getUniqUserRate(){
+        return notBotCount / this.ipAddresses.size();
+    }
+    public long getLogDurationHours(){
 
         Duration duration = Duration.between(minTime, maxTime);
-        long hours = duration.toHours();
-
-        res = this.totalTraffic / hours;
-
-        return res;
+        return duration.toHours();
     }
 
     public HashMap<String, Double> getOSRate(){
